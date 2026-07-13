@@ -1,0 +1,41 @@
+=== Reddit (r/PromptEngineering, r/artificial, r/ArtificialInteligence, r/MachineLearning — check each sub's self-promotion rules first) ===
+
+Title: I built a 75-dimension, 8-tier protocol for fully decomposing any subject or creation task [Original methodology]
+
+Body:
+Sharing an original methodology I published: the Master Microstructure Decode Format.
+
+It's 55 dimensions for decomposing anything that already exists (Point, Method, Logic, Failure Modes, Power Dynamics, Evidence Base, etc.), plus 20 action-layer dimensions specifically for research/build/develop/generate/create/find/decode work, paired with an 8-tier relational depth ladder (dependency map → feedback loops → correlation-vs-causation testing → cross-domain pattern mapping → hidden/suppressed relations → network-level leverage-point synthesis).
+
+It ships with skill-style frontmatter so it can be dropped straight into a generative-AI skills directory and invoked as `DECODE: <subject> / MODE: analyze|research|build|...`.
+
+Free and open for any use, no signup required to read it.
+
+Full write-up: https://universalherbalcare-bk.github.io/master-microstructure-decode-format/
+
+Would genuinely like feedback on the tier-escalation stopping rule (Section 2) — that's the part I iterated on most.
+
+=== Hacker News (Show HN) ===
+
+Title: Show HN: A 75-dimension, 8-tier protocol for decomposing any subject (or building one from scratch)
+
+URL: https://universalherbalcare-bk.github.io/master-microstructure-decode-format/
+
+First comment (post immediately after submitting):
+Author here. This is an instruction protocol, not a tool/app — a structured method (usable by a human or dropped into an LLM as a skill) for forcing genuine substance out of any subject: 55 dimensions for decomposing something that exists, 20 more for research/build/create work, and an 8-tier relational-depth ladder with an explicit stopping rule so it doesn't manufacture false complexity on simple subjects. Free, open, MIT-style "use however" license. Feedback welcome, especially on whether the tier ladder (Section 2) actually earns its complexity or over-engineers simple cases.
+
+=== X / Twitter thread ===
+
+1/ Published an original 75-dimension, 8-tier protocol for decomposing any subject down to its actual structure — the Master Microstructure Decode Format. 🧵
+
+2/ Most "be thorough" prompts give you 5-6 lenses. This gives 55 non-redundant dimensions for anything that exists: Point, Method, Logic, Failure Modes, Power Dynamics, Evidence Base, Time Sensitivity... each with an exact instruction, not a vague label.
+
+3/ Plus 20 action-layer dimensions that kick in for research / build / develop / generate / create / find / decode work — Research Question, Architecture, Prototype Strategy, Reverse-Engineering Path, and more.
+
+4/ Layered on top: an 8-tier relational depth ladder. Hidden structure lives in connections, not definitions. Tier 0 = basic dependency map. Tier 7 = network-level leverage-point synthesis. It stops the moment a tier adds nothing new — no manufactured depth.
+
+5/ Every claim gets tagged: [FACT] [DERIVED] [ASSUMPTION] [ESTIMATE] [FAITH] [CORRELATION-ONLY]. Correlation never silently becomes causation.
+
+6/ Free, open, drop-in as a generative-AI skill (has skill-matching frontmatter). Full protocol: https://universalherbalcare-bk.github.io/master-microstructure-decode-format/
+
+7/ By Brijesh Kapuriya, published July 13 2026. Would love feedback, especially on the tier-escalation stopping rule.

@@ -1,0 +1,9 @@
+If you own a custom domain and want the site at that domain instead of
+universalherbalcare-bk.github.io/master-microstructure-decode-format/, rename
+this file to CNAME (no extension) and put your domain on the first line, e.g.:
+
+decode.yourdomain.com
+
+Then add a DNS CNAME record at your domain registrar pointing that subdomain
+to universalherbalcare-bk.github.io, and update every "universalherbalcare-bk.github.io/..."
+URL in index.html, sitemap.xml, and robots.txt to your custom domain.

@@ -1,0 +1,135 @@
+name: GEO/AEO/SEO Watchdog (every 5 hours)
+
+on:
+  schedule:
+    - cron: '0 */5 * * *'
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  issues: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: geo-aeo-seo-watchdog
+  cancel-in-progress: false
+
+env:
+  SITE_URL: https://universalherbalcare-bk.github.io/master-microstructure-decode-format/
+  SITEMAP_URL: https://universalherbalcare-bk.github.io/master-microstructure-decode-format/sitemap.xml
+  INDEXNOW_KEY: 801baf8dc836e5280d203cbf6dda3abc
+
+jobs:
+  watchdog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git identity
+        run: |
+          git config user.name "geo-aeo-seo-watchdog"
+          git config user.email "actions@users.noreply.github.com"
+
+      - name: Uptime check (retries)
+        id: uptime
+        run: |
+          set +e
+          ok=0
+          for i in 1 2 3 4 5; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL")
+            if [ "$code" = "200" ]; then ok=1; break; fi
+            echo "Attempt $i: HTTP $code, retrying in 20s..."
+            sleep 20
+          done
+          echo "ok=$ok" >> "$GITHUB_OUTPUT"
+          echo "http_code=$code" >> "$GITHUB_OUTPUT"
+
+      - name: IndexNow ping (Bing / Yandex / Seznam / Naver — free, no account needed)
+        if: steps.uptime.outputs.ok == '1'
+        run: |
+          curl -s -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d "{
+              \"host\": \"universalherbalcare-bk.github.io\",
+              \"key\": \"$INDEXNOW_KEY\",
+              \"keyLocation\": \"$SITE_URL$INDEXNOW_KEY.txt\",
+              \"urlList\": [\"$SITE_URL\"]
+            }" || echo "IndexNow ping failed (non-fatal, continuing)"
+
+      - name: Bing sitemap ping (best-effort — Bing may deprecate this endpoint without notice)
+        if: steps.uptime.outputs.ok == '1'
+        run: |
+          curl -s "https://www.bing.com/ping?sitemap=$SITEMAP_URL" || echo "Bing ping failed (non-fatal)"
+
+      - name: Optional real rank check (only runs if SERPAPI_KEY secret is set)
+        id: rank
+        if: steps.uptime.outputs.ok == '1'
+        env:
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+        run: |
+          if [ -z "$SERPAPI_KEY" ]; then
+            echo "SERPAPI_KEY not set — skipping real rank check. See README for how to add one."
+            echo "rank_line=Rank check: skipped (no SERPAPI_KEY secret configured)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          RESP=$(curl -s "https://serpapi.com/search.json?engine=google&q=Master+Microstructure+Decode+Format&api_key=$SERPAPI_KEY")
+          POS=$(echo "$RESP" | grep -o '"position":[0-9]*' | head -1 | grep -o '[0-9]*')
+          echo "rank_line=Rank check: Google position for 'Master Microstructure Decode Format' = ${POS:-not found in top results}" >> "$GITHUB_OUTPUT"
+
+      - name: Update freshness stamp
+        if: steps.uptime.outputs.ok == '1'
+        run: |
+          NOW_DATE=$(date -u +%Y-%m-%d)
+          NOW_STAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+          sed -i "s#<span id=\"last-verified\">.*</span>#<span id=\"last-verified\">${NOW_DATE}</span>#" docs/index.html
+
+          mkdir -p status
+          {
+            echo "# Watchdog status log"
+            echo ""
+            echo "- Last run: ${NOW_STAMP}"
+            echo "- HTTP status: ${{ steps.uptime.outputs.http_code }}"
+            echo "- IndexNow: pinged (Bing/Yandex/Seznam/Naver)"
+            echo "- ${{ steps.rank.outputs.rank_line }}"
+          } > status/latest.md
+
+      - name: Commit freshness/status update if changed
+        if: steps.uptime.outputs.ok == '1'
+        run: |
+          git add docs/index.html status/latest.md
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: 5-hourly GEO/AEO/SEO watchdog refresh [skip ci]"
+            git push
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Open/update an issue if the site is down
+        if: steps.uptime.outputs.ok != '1'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = "🔴 Site down: watchdog could not reach the published page";
+            const body = `The 5-hourly GEO/AEO/SEO watchdog could not get a 200 response from ${process.env.SITE_URL} after 5 retries.\n\nLast observed HTTP code: ${{ steps.uptime.outputs.http_code }}\nRun: ${context.runId} at ${new Date().toISOString()}`;
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: "open", labels: "site-down"
+            });
+            if (existing.data.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title, body, labels: ["site-down"]
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: existing.data[0].number,
+                body: `Still down as of ${new Date().toISOString()}. HTTP code: ${{ steps.uptime.outputs.http_code }}`
+              });
+            }

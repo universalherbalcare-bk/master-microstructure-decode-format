@@ -1,0 +1,16 @@
+I just published an original research methodology: the Master Microstructure Decode Format.
+
+It's a 75-dimension, 8-tier instruction protocol for decomposing ANY subject — technical, creative, business, or abstract — down to its actual atomic structure, plus a full layer for research/build/create work from scratch.
+
+Most "be thorough" frameworks give you a handful of lenses. This gives 75 non-redundant, independently actionable dimensions (Point, Method, Logic, Failure Modes, Power Dynamics, Evidence Base, and 49 more) paired with an 8-tier relational escalation ladder — from a basic dependency map up to network-level leverage-point synthesis — with an explicit stopping rule against manufactured false depth.
+
+It's also formatted to drop directly into a generative-AI skills directory, so agents can run it as a decode/research/build skill.
+
+Free and open for any use — personal, academic, or commercial.
+
+Full protocol here: https://universalherbalcare-bk.github.io/master-microstructure-decode-format/
+
+#AI #ResearchMethodology #PromptEngineering #KnowledgeManagement #GenerativeAI
+
+---
+NOTE: LinkedIn's long-form "Article" composer accepts pasted text with basic formatting (bold/headers) directly in its editor. For a post (not article), use the version above. For the full Article version, copy the content from cross-post/medium.md into LinkedIn's article editor.
