@@ -1,3 +1,6 @@
 # Watchdog status log
 
-Not run yet — this fills in automatically once the GitHub Actions workflow starts running on schedule.
+- Last run: 2026-07-13 10:09 UTC
+- HTTP status: 200
+- IndexNow: pinged (Bing/Yandex/Seznam/Naver)
+- Rank check: skipped (no SERPAPI_KEY secret configured)
