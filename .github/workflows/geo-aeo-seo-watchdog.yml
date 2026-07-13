@@ -4,8 +4,6 @@ on:
   schedule:
     - cron: '0 */5 * * *'
   workflow_dispatch: {}
-  push:
-    branches: [main]
 
 permissions:
   contents: write
@@ -103,12 +101,23 @@ jobs:
         if: steps.uptime.outputs.ok == '1'
         run: |
           git add docs/index.html status/latest.md
-          if ! git diff --cached --quiet; then
-            git commit -m "chore: 5-hourly GEO/AEO/SEO watchdog refresh [skip ci]"
-            git push
-          else
+          if git diff --cached --quiet; then
             echo "No changes to commit"
+            exit 0
           fi
+          git commit -m "chore: 5-hourly GEO/AEO/SEO watchdog refresh [skip ci]"
+          for i in 1 2 3 4 5; do
+            if git push; then
+              echo "Pushed on attempt $i"
+              exit 0
+            fi
+            echo "Push rejected (likely a concurrent run), rebasing and retrying ($i/5)..."
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort; git reset --soft origin/main; git add docs/index.html status/latest.md; git commit -m "chore: 5-hourly GEO/AEO/SEO watchdog refresh [skip ci]"; }
+            sleep $((i * 5))
+          done
+          echo "::error::Failed to push freshness update after 5 attempts"
+          exit 1
 
       - name: Open/update an issue if the site is down
         if: steps.uptime.outputs.ok != '1'
